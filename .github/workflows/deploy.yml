@@ -24,10 +24,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Build (base = /calc-cofre/ para o Pages)
+      - name: Build (base = /Calc-ArmaX/ para o Pages)
         run: npm run build
         env:
-          VITE_BASE: /calc-cofre/
+          VITE_BASE: /Calc-ArmaX/
       - uses: actions/configure-pages@v5
         with:
           enablement: true

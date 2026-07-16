@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // PWA instalável + disfarce total: nome/ícone de calculadora.
-// `base` vem do ambiente: no GitHub Pages é "/<repo>/"; em host de domínio
+// `base` vem do ambiente: no GitHub Pages é "/Calc-ArmaX/"; em host de domínio
 // raiz (Vercel/Netlify) fica "/". Definido pelo workflow via VITE_BASE.
 export default defineConfig({
   base: process.env.VITE_BASE || "/",

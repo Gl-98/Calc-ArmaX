@@ -1,6 +1,6 @@
-# Calculadora‑Cofre 🔐
+# Calc‑ArmaX 🔐
 
-**🌐 No ar: https://gl-98.github.io/calc-cofre/**
+**🌐 No ar: https://gl-98.github.io/Calc-ArmaX/**
 
 Uma **calculadora científica** que, para qualquer pessoa, é só uma calculadora
 comum. Quem sabe o **código secreto de 4 dígitos** digita esse número e toca em
@@ -61,9 +61,9 @@ abre sempre como calculadora. Para entrar no cofre: digite o código e toque em
 
 O site é publicado automaticamente pelo GitHub Actions (`.github/workflows/deploy.yml`).
 **Para atualizar, é só dar `git push` na branch `main`** — o Actions builda e
-republica em `https://gl-98.github.io/calc-cofre/` em ~1–2 minutos.
+republica em `https://gl-98.github.io/Calc-ArmaX/` em ~1–2 minutos.
 
-O build usa `VITE_BASE=/calc-cofre/` (subcaminho do Pages). Para hospedar em um
+O build usa `VITE_BASE=/Calc-ArmaX/` (subcaminho do Pages). Para hospedar em um
 domínio raiz (Vercel/Netlify/Cloudflare Pages), basta importar o repositório —
 lá o `base` fica `/` automaticamente e nada mais precisa mudar.
 
