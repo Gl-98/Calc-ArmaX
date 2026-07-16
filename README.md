@@ -1,8 +1,14 @@
 # Calculadora‑Cofre 🔐
 
+**🌐 No ar: https://gl-98.github.io/calc-cofre/**
+
 Uma **calculadora científica** que, para qualquer pessoa, é só uma calculadora
 comum. Quem sabe o **código secreto de 4 dígitos** digita esse número e toca em
 **“=”** para abrir um **cofre criptografado** onde ficam fotos, vídeos e arquivos.
+
+Recursos: cofre com **álbuns/pastas**, **visualizador in‑app** (foto/vídeo sem
+baixar) com **miniaturas reais**, **troca de senha** pelo gesto secreto `0000`
+(sem perder arquivos), trava automática e wipe anti‑força‑bruta.
 
 > PWA (roda no navegador e pode ser instalada como app no celular/PC).
 > Front‑end: Vite + React + TypeScript + Tailwind. Nuvem opcional: Supabase.
@@ -51,6 +57,16 @@ abre sempre como calculadora. Para entrar no cofre: digite o código e toque em
 
 ---
 
+## 🚢 Publicação (GitHub Pages)
+
+O site é publicado automaticamente pelo GitHub Actions (`.github/workflows/deploy.yml`).
+**Para atualizar, é só dar `git push` na branch `main`** — o Actions builda e
+republica em `https://gl-98.github.io/calc-cofre/` em ~1–2 minutos.
+
+O build usa `VITE_BASE=/calc-cofre/` (subcaminho do Pages). Para hospedar em um
+domínio raiz (Vercel/Netlify/Cloudflare Pages), basta importar o repositório —
+lá o `base` fica `/` automaticamente e nada mais precisa mudar.
+
 ## ☁️ Ativar a nuvem (Supabase) — opcional
 
 O app funciona **100% local** (IndexedDB) sem configurar nada. Para sincronizar
@@ -88,7 +104,8 @@ src/
 ├─ components/
 │  ├─ Setup.tsx     ← 1ª execução: cria o código
 │  ├─ Calculator.tsx← calculadora + porta secreta
-│  └─ Vault.tsx     ← galeria: add / ver / baixar / apagar
+│  ├─ ChangePassword.tsx ← troca de senha (gesto 0000) sem perder arquivos
+│  └─ Vault.tsx     ← galeria + álbuns: add / ver / mover / baixar / apagar
 └─ App.tsx          ← máquina de estados (setup → calc → cofre)
 ```
 
