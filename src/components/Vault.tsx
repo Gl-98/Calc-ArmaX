@@ -21,9 +21,11 @@ import { cloudEnabled, getVaultId } from "../lib/supabase";
 export default function Vault({
   cryptoKey,
   onLock,
+  onStartPicking,
 }: {
   cryptoKey: CryptoKey;
   onLock: () => void;
+  onStartPicking: () => void;
 }) {
   const [items, setItems] = useState<VaultItem[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -205,7 +207,10 @@ export default function Vault({
       {/* Ação flutuante: adicionar */}
       <input ref={fileRef} type="file" multiple className="hidden" onChange={onPick} />
       <button
-        onClick={() => fileRef.current?.click()}
+        onClick={() => {
+          onStartPicking(); // suspende a trava automática durante a escolha
+          fileRef.current?.click();
+        }}
         disabled={busy}
         className="absolute bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-3xl text-white shadow-lg active:scale-95 disabled:opacity-50"
       >

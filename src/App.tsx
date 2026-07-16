@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Calculator from "./components/Calculator";
 import Setup from "./components/Setup";
 import Vault from "./components/Vault";
@@ -13,19 +13,39 @@ export default function App() {
   const [view, setView] = useState<View>("loading");
   // A chave viva só em memória (RAM) enquanto o cofre está aberto.
   const [key, setKey] = useState<CryptoKey | null>(null);
+  // Enquanto o seletor de arquivo estiver aberto, NÃO travamos o cofre —
+  // no celular a galeria/câmera manda o app pro segundo plano e travar aqui
+  // faria o upload se perder. Religa a trava assim que o app volta ao foco.
+  const pickingRef = useRef(false);
 
   useEffect(() => {
     installAntiInspect();
     setView(isConfigured() ? "calc" : "setup");
+    // Pede armazenamento persistente para o navegador não descartar o cofre.
+    navigator.storage?.persist?.().catch(() => {});
   }, []);
 
-  // Trava automática ao esconder o app (troca de aba / minimizar).
+  // Trava automática ao esconder o app (troca de aba / minimizar),
+  // exceto quando um upload está em andamento.
   useEffect(() => {
-    function onHide() {
-      if (document.hidden && view === "vault") lock();
+    function onVisibility() {
+      if (document.hidden) {
+        if (view === "vault" && !pickingRef.current) lock();
+      } else {
+        // Voltou ao foco: encerra a "janela" de upload.
+        pickingRef.current = false;
+      }
     }
-    document.addEventListener("visibilitychange", onHide);
-    return () => document.removeEventListener("visibilitychange", onHide);
+    // Ao voltar o foco (fecha o seletor no desktop também), encerra a janela de upload.
+    function onFocus() {
+      pickingRef.current = false;
+    }
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onFocus);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
@@ -65,6 +85,15 @@ export default function App() {
         onCancel={() => setView("calc")}
       />
     );
-  if (view === "vault" && key) return <Vault cryptoKey={key} onLock={lock} />;
+  if (view === "vault" && key)
+    return (
+      <Vault
+        cryptoKey={key}
+        onLock={lock}
+        onStartPicking={() => {
+          pickingRef.current = true;
+        }}
+      />
+    );
   return <Calculator onTryUnlock={handleTryUnlock} />;
 }
