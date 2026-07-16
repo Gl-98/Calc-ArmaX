@@ -20,9 +20,10 @@ export default function App() {
 
   useEffect(() => {
     installAntiInspect();
-    setView(isConfigured() ? "calc" : "setup");
     // Pede armazenamento persistente para o navegador não descartar o cofre.
     navigator.storage?.persist?.().catch(() => {});
+    // Config fica no IndexedDB (assíncrono): decide a tela inicial.
+    isConfigured().then((cfg) => setView(cfg ? "calc" : "setup"));
   }, []);
 
   // Trava automática ao esconder o app (troca de aba / minimizar),
@@ -51,7 +52,7 @@ export default function App() {
 
   async function handleTryUnlock(code: string): Promise<boolean> {
     // Gesto secreto: "0000" abre a troca de senha (sem perder arquivos).
-    if (code === RESERVED_CODE && isConfigured()) {
+    if (code === RESERVED_CODE && (await isConfigured())) {
       setView("changepw");
       return true;
     }

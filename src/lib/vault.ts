@@ -13,7 +13,17 @@ import { decryptBytes, decryptString, encryptBytes, encryptString } from "./cryp
 const DB_NAME = "app_store";
 const ITEMS = "items";
 const ALBUMS = "albums";
-const DB_VERSION = 2;
+const CONFIG = "config";
+const DB_VERSION = 3;
+
+// Configuração da senha (salt + verifier + tentativas), guardada AQUI no
+// IndexedDB (não no localStorage, que o celular apaga com facilidade).
+export interface StoredConfig {
+  k: string; // sempre "cfg"
+  saltB64: string;
+  verifierB64: string;
+  fails: number;
+}
 
 export interface FileMeta {
   name: string;
@@ -51,6 +61,7 @@ function openDb(): Promise<IDBDatabase> {
       const db = req.result;
       if (!db.objectStoreNames.contains(ITEMS)) db.createObjectStore(ITEMS, { keyPath: "id" });
       if (!db.objectStoreNames.contains(ALBUMS)) db.createObjectStore(ALBUMS, { keyPath: "id" });
+      if (!db.objectStoreNames.contains(CONFIG)) db.createObjectStore(CONFIG, { keyPath: "k" });
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
@@ -178,6 +189,21 @@ export async function deleteAlbum(key: CryptoKey, id: string): Promise<void> {
   await tx(ALBUMS, "readwrite", (s) => s.delete(id));
 }
 
+// ---------------------------------------------------------------- CONFIG (senha)
+
+export async function readConfig(): Promise<StoredConfig | null> {
+  const r = await tx<StoredConfig | undefined>(CONFIG, "readonly", (s) => s.get("cfg") as IDBRequest<StoredConfig | undefined>);
+  return r ?? null;
+}
+
+export async function writeConfig(cfg: Omit<StoredConfig, "k">): Promise<void> {
+  await tx(CONFIG, "readwrite", (s) => s.put({ k: "cfg", ...cfg }));
+}
+
+export async function clearConfig(): Promise<void> {
+  await tx(CONFIG, "readwrite", (s) => s.delete("cfg"));
+}
+
 // ---------------------------------------------------------------- MANUTENÇÃO
 
 /**
@@ -210,6 +236,8 @@ export async function rekeyAll(oldKey: CryptoKey, newKey: CryptoKey): Promise<nu
 export async function wipeVault(): Promise<void> {
   await tx(ITEMS, "readwrite", (s) => s.clear());
   await tx(ALBUMS, "readwrite", (s) => s.clear());
+  await tx(CONFIG, "readwrite", (s) => s.clear());
+  // Limpa também resíduos da versão antiga (localStorage).
   localStorage.removeItem("app.cfg.s");
   localStorage.removeItem("app.cfg.v");
   localStorage.removeItem("app.cfg.f");
