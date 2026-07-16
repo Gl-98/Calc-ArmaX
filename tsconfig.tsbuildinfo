@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/calculator.tsx","./src/components/changepassword.tsx","./src/components/setup.tsx","./src/components/vault.tsx","./src/lib/calc.ts","./src/lib/crypto.ts","./src/lib/harden.ts","./src/lib/passcode.ts","./src/lib/supabase.ts","./src/lib/vault.ts","./vite-env.d.ts"],"version":"5.6.3"}
